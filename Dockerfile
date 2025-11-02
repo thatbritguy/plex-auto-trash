@@ -30,6 +30,7 @@ RUN apk add --no-cache \
  && mkdir /var/cache/apk
 
 COPY root/ /
+RUN chmod +x /etc/cont-init.d/10-cron.sh
 
 WORKDIR /app
 COPY --from=build /app/build/install/plex-auto-trash ./
