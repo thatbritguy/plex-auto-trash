@@ -10,7 +10,6 @@ COPY build.gradle ./
 COPY src ./src
 RUN ./gradlew build
 
-
 FROM project42/s6-alpine:3.19
 LABEL maintainer="Jake Wharton <docker@jakewharton.com>"
 ENTRYPOINT ["/init"]
@@ -30,7 +29,7 @@ RUN apk add --no-cache \
  && mkdir /var/cache/apk
 
 COPY root/ /
-RUN chmod +x /etc/cont-init.d/10-cron.sh
+RUN chmod +x /etc/cont-init.d/10-cron.sh /etc/services.d/cron/run
 
 WORKDIR /app
 COPY --from=build /app/build/install/plex-auto-trash ./
