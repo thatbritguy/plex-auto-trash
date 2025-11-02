@@ -1,0 +1,17 @@
+name: Sync fork
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: repo-sync/repo-sync@v2
+        with:
+          source_repo: 'JakeWharton/plex-auto-trash'
+          source_branch: 'trunk'
+          destination_branch: 'trunk'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
