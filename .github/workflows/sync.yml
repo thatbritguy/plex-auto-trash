@@ -2,7 +2,7 @@ name: Sync Upstream (safe fast-forward)
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # Daily at 10 AM UTC
+    - cron: '0 10 * * *' # Daily at 10 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -13,17 +13,29 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          ref:  master
+
       - name: Sync from upstream
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
           upstream_sync_repo: 'JakeWharton/plex-auto-trash'
           upstream_sync_branch: 'trunk'
           target_sync_branch: 'master'
+
+          # Required tokens
           target_repo_token: ${{ secrets.GITHUB_TOKEN }}
-          upstream_pull_args: '--ff-only'
+
+          # Recommended git settings
           git_config_user: 'github-actions[bot]'
           git_config_email: 'github-actions[bot]@users.noreply.github.com'
           git_config_pull_rebase: 'false'
+          upstream_pull_args: '--ff-only'
+
+          # Optional but helpful performance settings
+          test_mode: false
 
       - name: Report sync success
         if: success() && steps.sync.outputs.has_new_commits == 'true'
@@ -32,7 +44,7 @@ jobs:
       - name: Report no changes
         if: success() && steps.sync.outputs.has_new_commits != 'true'
         run: echo "ℹ️ No upstream changes to sync today."
-
+        
       - name: Notify if sync failed
         if: failure()
         run: |
