@@ -15,7 +15,16 @@ RUN ./gradlew build
 
 # Stage 2 – runtime container using a proper multi-arch base
 FROM ghcr.io/linuxserver/baseimage-alpine:3.19
-LABEL maintainer="Jake Wharton <docker@jakewharton.com>"
+
+LABEL maintainer="Jake Wharton <docker@jakewharton.com>" \
+      org.opencontainers.image.title="plex-auto-trash" \
+      org.opencontainers.image.description="Automatically empty the trash in all of your Plex libraries." \
+      org.opencontainers.image.url="https://github.com/thatbritguy/plex-auto-trash" \
+      org.opencontainers.image.source="https://github.com/thatbritguy/plex-auto-trash" \
+      org.opencontainers.image.version="${VERSION:-dev}" \
+      org.opencontainers.image.revision="${GITHUB_SHA:-manual}" \
+      org.opencontainers.image.created="${BUILD_DATE:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}"
+
 ENTRYPOINT ["/init"]
 
 # Default environment variables (same as original)
