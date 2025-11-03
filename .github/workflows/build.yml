@@ -68,7 +68,7 @@ jobs:
           build-args: |
             VERSION=${{ github.ref_name || github.event.release.tag_name }}
             GITHUB_SHA=${{ github.sha }}
-            BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
 
   release-notes:
     if: startsWith(github.ref, 'refs/tags/v')
