@@ -19,7 +19,7 @@ jobs:
           upstream_sync_repo: 'JakeWharton/plex-auto-trash'
           upstream_sync_branch: 'trunk'
           target_sync_branch: 'master'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
           upstream_pull_args: '--ff-only'
           git_config_user: 'github-actions[bot]'
           git_config_email: 'github-actions[bot]@users.noreply.github.com'
@@ -38,3 +38,7 @@ jobs:
         run: |
           echo "⚠️ Upstream sync failed for thatbritguy/plex-auto-trash"
           echo "You’ll get a GitHub notification with full logs."
+
+      - name: Fail workflow explicitly on error
+        if: failure()
+        run: exit 1
