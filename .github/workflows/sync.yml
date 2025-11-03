@@ -2,40 +2,37 @@ name: Sync Upstream (safe fast-forward)
 
 on:
   schedule:
-    - cron: '0 10 * * *'   # Runs daily at 10 AM UTC
+    - cron: '0 10 * * *' # Daily at 10 AM UTC
   workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       pull-requests: write
 
     steps:
-      - name: Check out destination repo
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
       - name: Sync from upstream
-        uses: repo-sync/github-sync@v3
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3
         with:
-          source_repo: 'JakeWharton/plex-auto-trash'
-          source_branch: 'trunk'
-          destination_branch: 'master'
+          upstream_repo: 'JakeWharton/plex-auto-trash'
+          upstream_branch: 'trunk'
+          target_branch: 'master'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          sync_tags: false
-          sync_prune: true
-          sync_fork: true
-          force_sync: false   # Fast-forward only (won’t overwrite local changes)
+
+          # Optional but recommended:
+          force_sync: false        # ensures safe fast-forward only
+          tags: false              # do not import or sync tags/releases
+          shallow_clone: true      # faster, uses shallow fetch
 
       - name: Notify if sync failed
         if: failure()
         run: |
           echo "⚠️ Upstream sync failed for thatbritguy/plex-auto-trash"
-          echo "You’ll get a GitHub email with more details and logs."
-
+          echo "You’ll get a GitHub notification with full logs."
+          
       - name: Fail workflow explicitly on error
         if: failure()
         run: exit 1
