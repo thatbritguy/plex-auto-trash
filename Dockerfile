@@ -36,7 +36,7 @@ ENTRYPOINT ["/init"]
 ENV \
   S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
   CRON="12 * * * *" \
-  SCAN_IDLE="5" \
+  SCAN_IDLE="5"
 
 # Install dependencies
 RUN apk add --no-cache \
