@@ -32,7 +32,7 @@ jobs:
 
             # Stable LSIO releases (vX.Y.Z-lsio)
             type=match,pattern=^v\d+\.\d+\.\d+-lsio$,group=0
-            type=raw,value=latest,enable=${{ github.ref_name matches '^v[0-9]+\.[0-9]+\.[0-9]+-lsio$' }}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') && endsWith(github.ref_name, '-lsio') && !contains(github.ref_name, 'beta') && !contains(github.ref_name, 'rc') }}
 
             # Pre-releases (vX.Y.Z-lsio-beta.X or vX.Y.Z-lsio-rc.X)
             type=match,pattern=^v\d+\.\d+\.\d+-lsio-(beta|rc)\.\d+$,group=0
@@ -61,7 +61,7 @@ jobs:
           build-args: |
             VERSION=${{ github.ref_name }}
             GITHUB_SHA=${{ github.sha }}
-            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp || runner.temp }}
 
   release-notes:
     name: Generate Release Notes
