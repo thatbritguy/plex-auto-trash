@@ -6,28 +6,15 @@ on:
       - master
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   build-and-push:
+    name: Build and Push Multi-Arch Image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-      pull-requests: read
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up QEMU for cross-platform builds
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true
-          platforms: linux/amd64,linux/arm64
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Extract Docker metadata (tags, labels)
         id: meta
@@ -35,17 +22,19 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            # Branch push → :master
+            # Master branch build
             type=ref,event=branch,branch=master
 
-            # Stable lsio builds (e.g. v1.2.3-lsio)
-            type=match,pattern=v\d+\.\d+\.\d+-lsio$,group=0,latest=true
+            # Stable LSIO releases (vX.Y.Z-lsio)
+            type=match,pattern=^v\d+\.\d+\.\d+-lsio$,group=0
+            type=raw,value=latest,enable=${{ github.ref_name =~ '^v[0-9]+\.[0-9]+\.[0-9]+-lsio$' }}
 
-            # Pre-releases (e.g. v1.2.3-lsio-beta.1 or v1.2.3-lsio-rc.1)
+            # Pre-releases (vX.Y.Z-lsio-beta.X or vX.Y.Z-lsio-rc.X)
             type=match,pattern=^v\d+\.\d+\.\d+-lsio-(beta|rc)\.\d+$,group=0
 
-            # Always add short SHA for traceability
+            # Short SHA tag for traceability
             type=sha,format=short,prefix=sha-
+
           flavor: |
             latest=false
 
@@ -70,6 +59,7 @@ jobs:
             BUILD_DATE=${{ github.event.head_commit.timestamp }}
 
   release-notes:
+    name: Generate Release Notes
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     needs: build-and-push
@@ -77,7 +67,8 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Generate changelog
         id: changelog
