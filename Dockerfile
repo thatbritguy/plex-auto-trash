@@ -14,7 +14,7 @@ COPY src ./src
 RUN ./gradlew build
 
 # Stage 2 – runtime container using a proper multi-arch base
-FROM ghcr.io/linuxserver/baseimage-alpine:3.22
+FROM ghcr.io/linuxserver/baseimage-alpine:3.23
 
 ARG VERSION
 ARG GITHUB_SHA
