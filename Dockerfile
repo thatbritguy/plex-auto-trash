@@ -1,5 +1,5 @@
 # Stage 1 – build the binary using Azul JDK (multi-arch)
-FROM azul/zulu-openjdk-alpine:25-latest AS build
+FROM azul/zulu-openjdk-alpine:26-latest AS build
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 WORKDIR /app
 
